@@ -122,6 +122,71 @@
     location.href = 'mailto:' + (C.email || '') + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
   });
 
+  /* ---- 版本檢查：有新版本時先提示，使用者確認後才更新 ---- */
+  const CUR = (document.querySelector('meta[name="site-version"]') || {}).content || '';
+  let shown = false;
+  async function checkVersion() {
+    if (shown || !CUR) return;
+    try {
+      const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });
+      if (!r.ok) return;
+      const v = await r.json();
+      if (v.version && v.version !== CUR) showUpdate(v);
+    } catch (e) { /* 離線或讀取失敗時略過 */ }
+  }
+  function showUpdate(v) {
+    shown = true;
+    const bar = document.createElement('div');
+    bar.className = 'update-bar';
+    bar.setAttribute('role', 'status');
+    bar.innerHTML =
+      '<div class="ub-text"><b>網站有新版本 v' + v.version + '</b>' +
+      '<span>目前版本 v' + CUR + (v.notes ? '・' + String(v.notes).replace(/[<>&]/g, '') : '') + '</span></div>' +
+      '<div class="ub-actions"><button class="btn btn-frog ub-go">立即更新</button>' +
+      '<button class="btn btn-ghost ub-later">稍後</button></div>';
+    document.body.appendChild(bar);
+    requestAnimationFrame(() => bar.classList.add('show'));
+    bar.querySelector('.ub-later').addEventListener('click', () => bar.remove());
+    bar.querySelector('.ub-go').addEventListener('click', () => {
+      const go = bar.querySelector('.ub-go');
+      go.textContent = '更新中…'; go.disabled = true;
+      doUpdate(v.version);
+    });
+  }
+  async function doUpdate(ver) {
+    // 先強制重新下載頁面與資源，再重新載入
+    const files = [location.pathname, 'assets/style.css?v=' + ver,
+                   'assets/site.js?v=' + ver, 'config.js?v=' + ver];
+    await Promise.all(files.map(f => fetch(f, { cache: 'reload' }).catch(() => {})));
+    const u = new URL(location.href);
+    u.searchParams.set('v', ver);
+    location.replace(u.toString());
+  }
+  function toast(msg) {
+    const t = document.createElement('div');
+    t.className = 'ver-toast'; t.textContent = msg;
+    document.body.appendChild(t);
+    requestAnimationFrame(() => t.classList.add('show'));
+    setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 2200);
+  }
+  /* 點版本標示：檢查並更新到最新版 */
+  document.querySelectorAll('.ver-badge').forEach(b => b.addEventListener('click', async () => {
+    if (b.dataset.busy) return;
+    b.dataset.busy = '1'; const label = b.textContent; b.textContent = '檢查中…';
+    let latest = CUR;
+    try {
+      const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });
+      if (r.ok) latest = (await r.json()).version || CUR;
+    } catch (e) {}
+    if (latest !== CUR) { b.textContent = '更新到 v' + latest + '…'; doUpdate(latest); return; }
+    toast('已是最新版本 v' + CUR + '，重新載入最新檔案');
+    setTimeout(() => doUpdate(CUR), 900);
+    b.textContent = label;
+  }));
+  checkVersion();
+  setInterval(checkVersion, 5 * 60 * 1000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) checkVersion(); });
+
   /* ---- Botpress webchat (AI 客服) ---- */
   const BP = CFG.botpress || {};
   if (BP.injectUrl && BP.configUrl) {
