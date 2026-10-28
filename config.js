@@ -22,8 +22,8 @@ window.HMG_CONFIG = {
      第一行貼到 injectUrl，第二行（files.bpcontent.cloud/...js）貼到 configUrl。
      留空時，右下角會顯示備用的聯絡小視窗。 */
   botpress: {
-    injectUrl: '',   // 例：'https://cdn.botpress.cloud/webchat/v3.x/inject.js'
-    configUrl: ''    // 例：'https://files.bpcontent.cloud/2026/10/28/xx/2026xxxx-XXXXXXXX.js'
+    injectUrl: 'https://cdn.botpress.cloud/webchat/v5.0/inject.js',
+    configUrl: 'https://files.bpcontent.cloud/2026/10/28/15/20261028154949-6VN06280.js'  // 哈喵呱小幫手
   },
 
   /* ---------- 聯絡資訊 ---------- */
