@@ -1,4 +1,4 @@
-# 哈喵呱 HAMEOWGUA 官網 v1.0
+# 哈喵呱 HAMEOWGUA 官網 v1.1
 
 純靜態網站（HTML/CSS/JS），可直接部署到 GitHub Pages、Netlify、Vercel 或 Railway。
 

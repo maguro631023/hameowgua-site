@@ -138,7 +138,7 @@
     const panel = document.createElement('div');
     panel.className = 'chat-panel';
     panel.innerHTML = `
-      <header><img src="assets/img/brand-1.png" alt=""><div><b>哈喵呱小幫手</b><span>通常於 24 小時內回覆</span></div></header>
+      <header><img src="assets/img/brand-1.png" alt="" onerror="this.onerror=null;this.src='https://lh3.googleusercontent.com/d/10vGAkyjCVqrekcN_UrfqZpfrV-GQw5OU'"><div><b>哈喵呱小幫手</b><span>通常於 24 小時內回覆</span></div></header>
       <div class="chat-body">
         <div class="bubble">嗨！我是哈喵呱 🐸🐱 想了解課程、出金實績或預約諮詢嗎？選一個最方便的方式找我們：</div>
         <div class="quick">
