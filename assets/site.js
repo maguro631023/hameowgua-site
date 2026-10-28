@@ -42,6 +42,69 @@
     lb.classList.add('open');
   }));
 
+  /* ---- PWA：Service Worker 與安裝 App ---- */
+  let swReg = null;
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').then(r => { swReg = r; }).catch(() => {});
+    });
+  }
+  const installBtns = document.querySelectorAll('.install-btn');
+  const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  let deferredPrompt = null;
+  const showInstall = on => installBtns.forEach(b => b.hidden = !on);
+  window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; showInstall(true); });
+  window.addEventListener('appinstalled', () => { deferredPrompt = null; showInstall(false); toastLater('已安裝哈喵呱 App 🎉'); });
+  if (isIOS && !standalone) showInstall(true);
+  installBtns.forEach(b => b.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') showInstall(false);
+      deferredPrompt = null;
+    } else if (isIOS) {
+      iosHint();
+    }
+  }));
+  function iosHint() {
+    const m = document.createElement('div');
+    m.className = 'qr-modal open';
+    m.innerHTML = '<div class="qr-card"><button class="qr-close" aria-label="關閉">×</button>' +
+      '<img src="assets/icons/icon-192.png" alt="" style="width:84px;height:84px;padding:0;border-radius:20px">' +
+      '<b>把哈喵呱加到主畫面</b>' +
+      '<ol class="ios-steps"><li>用 <b>Safari</b> 開啟本站</li><li>點下方的「分享」按鈕 <span aria-hidden="true">⬆︎</span></li>' +
+      '<li>選擇「<b>加入主畫面</b>」</li><li>按右上角「新增」</li></ol></div>';
+    document.body.appendChild(m);
+    m.addEventListener('click', e => { if (e.target === m || e.target.classList.contains('qr-close')) m.remove(); });
+  }
+  function toastLater(msg) { if (typeof toast === 'function') toast(msg); }
+
+  /* ---- 網站 QR Code ---- */
+  const qrBtn = document.querySelector('.qr-btn');
+  if (qrBtn) {
+    const SITE = 'https://maguro631023.github.io/hameowgua-site/';
+    const m = document.createElement('div');
+    m.className = 'qr-modal';
+    m.innerHTML = '<div class="qr-card" role="dialog" aria-label="網站 QR Code">' +
+      '<button class="qr-close" aria-label="關閉">×</button>' +
+      '<b>掃描開啟哈喵呱官網</b>' +
+      '<img src="assets/img/qr.svg" alt="哈喵呱官網 QR Code">' +
+      '<span class="qr-url">' + SITE.replace('https://', '') + '</span>' +
+      '<div class="qr-actions"><a class="btn btn-frog" href="assets/img/qr-hameowgua.png" download="hameowgua-qr.png">下載 QR Code</a>' +
+      '<button class="btn btn-ghost qr-copy">複製網址</button></div></div>';
+    document.body.appendChild(m);
+    const close = () => m.classList.remove('open');
+    qrBtn.addEventListener('click', () => m.classList.add('open'));
+    m.addEventListener('click', e => { if (e.target === m || e.target.classList.contains('qr-close')) close(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+    m.querySelector('.qr-copy').addEventListener('click', async e => {
+      try { await navigator.clipboard.writeText(SITE); e.target.textContent = '已複製 ✓'; }
+      catch (_) { e.target.textContent = SITE; }
+    });
+  }
+
   /* ---- proofs filter ---- */
   const tabs = document.querySelectorAll('.tab[data-filter]');
   tabs.forEach(t => t.addEventListener('click', () => {
@@ -154,6 +217,7 @@
     });
   }
   async function doUpdate(ver) {
+    try { const r = await navigator.serviceWorker?.getRegistration(); if (r) await r.update(); } catch (e) {}
     // 先強制重新下載頁面與資源，再重新載入
     const files = [location.pathname, 'assets/style.css?v=' + ver,
                    'assets/site.js?v=' + ver, 'config.js?v=' + ver];

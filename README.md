@@ -1,4 +1,4 @@
-# 哈喵呱 HAMEOWGUA 官網 v1.3
+# 哈喵呱 HAMEOWGUA 官網 v1.5
 
 純靜態網站（HTML/CSS/JS），可直接部署到 GitHub Pages、Netlify、Vercel 或 Railway。
 
@@ -38,3 +38,8 @@
 - 每頁上方 Logo 旁顯示目前版本（取自 `<meta name="site-version">`）；點一下會檢查 `version.json`，有新版就直接更新，已是最新版則強制重新載入最新檔案。
 - 網頁載入時、每 5 分鐘、以及切回分頁時，會讀取 `version.json`；若版本號比頁面新，會先跳出「網站有新版本」提示，訪客按「立即更新」才會強制重新下載並重新整理，按「稍後」則不打擾。
 - 發布新版時：HTML 的 `site-version`、`?v=` 資源版本號與 `version.json` 需一起更新（同一版 zip 已處理好）。
+
+## 6. PWA（安裝成 App）
+- `manifest.webmanifest`＋`sw.js`：可在 Android／電腦版 Chrome、Edge 按「安裝 App」，iPhone 則由 Safari「分享 → 加入主畫面」。
+- 離線時仍可瀏覽已看過的頁面；`version.json` 永遠走網路，所以更新提示照常運作。
+- App 圖示在 `assets/icons/`，想改用品牌 Logo 時覆蓋同名 PNG（192、512、maskable-512、apple-touch-icon 180）即可。
