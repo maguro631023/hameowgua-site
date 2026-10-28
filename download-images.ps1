@@ -1,0 +1,16 @@
+﻿# 下載品牌與實績圖片到 assets/img（可選，未下載時網頁會直接讀取 Google Drive）
+New-Item -ItemType Directory -Force -Path assets/img | Out-Null
+Invoke-WebRequest "https://drive.google.com/uc?export=download&id=10vGAkyjCVqrekcN_UrfqZpfrV-GQw5OU" -OutFile "assets/img/brand-1.png"
+Invoke-WebRequest "https://drive.google.com/uc?export=download&id=1yTr17B2f1RbCo3LLDECvdEzsAdV8UOno" -OutFile "assets/img/brand-2.png"
+Invoke-WebRequest "https://drive.google.com/uc?export=download&id=1f3bSRLpIRWyFoG4Jani66gQE02tK4fIC" -OutFile "assets/img/brand-3.png"
+Invoke-WebRequest "https://drive.google.com/uc?export=download&id=1uOTYw6uiK9BSm1x2EPav_Q69nRFhUpjH" -OutFile "assets/img/visual-4.png"
+Invoke-WebRequest "https://drive.google.com/uc?export=download&id=1yJnaDjXa9-9nUQ7KnwOZqgtJAsyKyjZZ" -OutFile "assets/img/visual-5.png"
+Invoke-WebRequest "https://drive.google.com/uc?export=download&id=1zVq2SVo2E8RI7CBQI9JZidPZXpO11poF" -OutFile "assets/img/visual-6.png"
+Invoke-WebRequest "https://drive.google.com/uc?export=download&id=181WHdm0Q8BO1BL0eT7OyPMz7UVNzplLh" -OutFile "assets/img/payout-jul.png"
+Invoke-WebRequest "https://drive.google.com/uc?export=download&id=1o725TTNFpz4nxjuEdgl96hNgTI9z2k24" -OutFile "assets/img/payout-aug.png"
+Invoke-WebRequest "https://drive.google.com/uc?export=download&id=1yoq6bscipotdv6Je5BecG1CdMb6UlMfH" -OutFile "assets/img/payout-sep.png"
+Invoke-WebRequest "https://drive.google.com/uc?export=download&id=1vfWq4qvsfacWZHspjwpJwgHdqj_QMtnT" -OutFile "assets/img/payout-record.png"
+Invoke-WebRequest "https://drive.google.com/uc?export=download&id=1ChqbOHflfHLRl5bGpWzzlZ5fWBOL4YO4" -OutFile "assets/img/cert-topstep.png"
+Invoke-WebRequest "https://drive.google.com/uc?export=download&id=1-QqM77pzfp7Xm73B28HH102iF3QEtmMb" -OutFile "assets/img/cert-gff.png"
+Invoke-WebRequest "https://drive.google.com/uc?export=download&id=1HJCH0BrmvPuplBTJzbSiCNzCzM0kVkt0" -OutFile "assets/img/cert-tradeify.png"
+Invoke-WebRequest "https://drive.google.com/uc?export=download&id=1ljKoKXmFoRvl0pqht1rJZUbdiR19DVnY" -OutFile "assets/img/cert-lucid.jpg"
