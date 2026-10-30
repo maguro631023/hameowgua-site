@@ -1,5 +1,5 @@
-/* 哈喵呱 Service Worker — 版本 1.6 */
-const VERSION = '1.6';
+/* 哈喵呱 Service Worker — 版本 1.7 */
+const VERSION = '1.7';
 const CACHE = 'hameowgua-' + VERSION;
 const CORE = ['./', 'index.html', 'courses.html', 'contact.html', 'manifest.webmanifest',
   'assets/style.css?v=' + VERSION, 'assets/site.js?v=' + VERSION, 'config.js?v=' + VERSION,

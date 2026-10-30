@@ -1,4 +1,4 @@
-# 哈喵呱 HAMEOWGUA 官網 v1.6
+# 哈喵呱 HAMEOWGUA 官網 v1.7
 
 純靜態網站（HTML/CSS/JS），可直接部署到 GitHub Pages、Netlify、Vercel 或 Railway。
 
@@ -43,3 +43,9 @@
 - `manifest.webmanifest`＋`sw.js`：可在 Android／電腦版 Chrome、Edge 按「安裝 App」，iPhone 則由 Safari「分享 → 加入主畫面」。
 - 離線時仍可瀏覽已看過的頁面；`version.json` 永遠走網路，所以更新提示照常運作。
 - App 圖示在 `assets/icons/`，想改用品牌 Logo 時覆蓋同名 PNG（192、512、maskable-512、apple-touch-icon 180）即可。
+
+## 7. GA4 流量分析
+- `config.js` → `ga4.measurementId`（目前 `G-JNJEQCQR6T`，GA 資源「哈喵呱 HAMEOWGUA 官網」）。留空即停用。
+- 自動記錄：網頁瀏覽、捲動、外連點擊（GA4 加強型評估），並附 `display_mode`（browser／pwa）與 `site_version`。
+- 自訂事件：`generate_lead`（送出諮詢表單）、`enroll_click`（課程報名）、`add_to_cart`（Shopify 加入購物車）、`cta_click`、`sns_click`、`contact_email_click`、`chat_open`（AI 客服）、`faq_open`、`proof_filter`、`image_zoom`、`qr_open`、`pwa_install_click`、`pwa_installed`、`version_check`。
+- 建議到 GA4「管理 → 事件」把 `generate_lead`、`enroll_click` 標成「關鍵事件」，就能看報名轉換率。

@@ -3,6 +3,53 @@
   const CFG = window.HMG_CONFIG || {};
   const C = CFG.contact || {};
 
+  /* ---- Google Analytics 4 ---- */
+  const GA_ID = ((CFG.ga4 || {}).measurementId || '').trim();
+  const gaOn = /^G-[A-Z0-9]+$/i.test(GA_ID);
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { window.dataLayer.push(arguments); }
+  if (gaOn) {
+    const s = document.createElement('script');
+    s.async = true; s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+    document.head.appendChild(s);
+    gtag('js', new Date());
+    const standaloneMode = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+    gtag('config', GA_ID, { display_mode: standaloneMode ? 'pwa' : 'browser',
+                           site_version: (document.querySelector('meta[name="site-version"]') || {}).content });
+  }
+  const track = (name, params) => { if (gaOn) gtag('event', name, params || {}); };
+  window.hmgTrack = track;
+
+  // 點擊行為（事件委派）
+  document.addEventListener('click', e => {
+    const t = e.target.closest('a,button,figure,[data-zoom]');
+    if (!t) return;
+    if (t.matches('[data-link]')) {
+      const k = t.dataset.link;
+      track(k === 'email' ? 'contact_email_click' : 'sns_click', { platform: k, location: t.closest('header,footer,main') ? t.closest('header,footer,main').tagName.toLowerCase() : '' });
+    } else if (t.closest('.buy-slot')) {
+      track('enroll_click', { course: t.closest('.buy-slot').dataset.name, method: 'contact' });
+    } else if (t.matches('.hero-ctas a, .cta-band a')) {
+      track('cta_click', { label: t.textContent.trim(), link: t.getAttribute('href') || '' });
+    } else if (t.matches('.install-btn')) {
+      track('pwa_install_click');
+    } else if (t.matches('.qr-btn')) {
+      track('qr_open');
+    } else if (t.matches('.ver-badge')) {
+      track('version_check');
+    } else if (t.matches('.tab[data-filter]')) {
+      track('proof_filter', { filter: t.dataset.filter });
+    } else if (t.matches('[data-zoom]')) {
+      const img = t.querySelector('img');
+      track('image_zoom', { image: img ? img.alt : '' });
+    } else if (t.matches('.chat-fab')) {
+      track('chat_open', { type: 'fallback' });
+    }
+  }, true);
+  document.querySelectorAll('.faq details').forEach(d => d.addEventListener('toggle', () => {
+    if (d.open) track('faq_open', { question: d.querySelector('summary').textContent.trim() });
+  }));
+
   /* ---- mobile nav ---- */
   const toggle = document.querySelector('.nav-toggle');
   const links = document.querySelector('.nav-links');
@@ -56,7 +103,7 @@
   let deferredPrompt = null;
   const showInstall = on => installBtns.forEach(b => b.hidden = !on);
   window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; showInstall(true); });
-  window.addEventListener('appinstalled', () => { deferredPrompt = null; showInstall(false); toastLater('已安裝哈喵呱 App 🎉'); });
+  window.addEventListener('appinstalled', () => { track('pwa_installed'); deferredPrompt = null; showInstall(false); toastLater('已安裝哈喵呱 App 🎉'); });
   if (isIOS && !standalone) showInstall(true);
   installBtns.forEach(b => b.addEventListener('click', async () => {
     if (deferredPrompt) {
@@ -147,6 +194,7 @@
             id, node: slot, moneyFormat: 'NT%24%7B%7Bamount_no_decimals%7D%7D',
             options: {
               product: {
+                events: { addVariantToCart: () => track('add_to_cart', { course: slot.dataset.name, currency: 'TWD' }) },
                 contents: { img: false, title: false, price: false },
                 text: { button: SH.buttonText || '立即報名' },
                 styles: {
@@ -180,6 +228,7 @@
   if (form) form.addEventListener('submit', e => {
     e.preventDefault();
     const d = new FormData(form);
+    track('generate_lead', { topic: d.get('topic'), experience: d.get('exp') });
     const subject = '【哈喵呱官網】' + (d.get('topic') || '詢問');
     const body = `姓名：${d.get('name')}\n聯絡方式：${d.get('reach')}\n交易經驗：${d.get('exp')}\n\n${d.get('msg')}`;
     location.href = 'mailto:' + (C.email || '') + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
@@ -255,6 +304,7 @@
   const BP = CFG.botpress || {};
   if (BP.injectUrl && BP.configUrl) {
     loadScript(BP.injectUrl).then(() => loadScript(BP.configUrl))
+      .then(() => { try { window.botpress.on('webchat:opened', () => track('chat_open', { type: 'botpress' })); } catch (e) {} })
       .catch(() => { console.warn('Botpress 載入失敗，改用備用聯絡視窗'); fallbackChat(); });
   } else {
     fallbackChat();

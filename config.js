@@ -26,6 +26,13 @@ window.HMG_CONFIG = {
     configUrl: 'https://files.bpcontent.cloud/2026/10/28/15/20261028154949-6VN06280.js'  // 哈喵呱小幫手
   },
 
+  /* ---------- Google Analytics 4 ----------
+     GA4 後台 → 管理 → 資料串流 → 網站 → 複製「評估 ID」（G- 開頭）貼到下面。
+     留空時不載入 GA4。 */
+  ga4: {
+    measurementId: 'G-JNJEQCQR6T'   // 哈喵呱 HAMEOWGUA 官網（資源 561579389）
+  },
+
   /* ---------- 聯絡資訊 ---------- */
   contact: {
     email:     'hyhsu950103@gmail.com',
